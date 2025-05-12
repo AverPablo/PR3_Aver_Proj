@@ -1,0 +1,37 @@
+name: File Creation Workflow
+on:
+  create:
+    branches:
+      - main
+
+jobs:
+  create_file:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create a text file
+        run: |
+          echo "Hello, this is a sample text file." > sample.txt
+          echo "Файл sample.txt создан."
+
+      - name: Upload text file as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: sample-artifact
+          path: sample.txt
+
+  process_file:
+    runs-on: ubuntu-latest
+    needs: create_file
+    steps:
+      - name: Download text file artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: sample-artifact
+
+      - name: Read and process the text file
+        run: |
+          content=$(cat sample.txt)
+          echo "Содержимое файла: $content"
